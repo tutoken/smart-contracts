@@ -7,12 +7,12 @@ async function main() {
     debugger
    
 
-    //部署tokencontroller
-//     const tokencontroller = deploy_tokencontroller()
-//    const tokencontrollerAddress=(await tokencontroller).address
+    // 部署tokencontroller
+    const tokencontroller = deploy_tokencontroller()
+   const tokencontrollerAddress=(await tokencontroller).address
 
-//    const tokencontrollerAddressPosition= keccak256(tokencontrollerAddress)
-//    console.log('tokencontrollerAddressPosition:'+tokencontrollerAddressPosition)
+   const tokencontrollerAddressPosition= keccak256(tokencontrollerAddress)
+   console.log('tokencontrollerAddressPosition:'+tokencontrollerAddressPosition)
 
    //部署tusd
    const tusd = deploy_tusd()
