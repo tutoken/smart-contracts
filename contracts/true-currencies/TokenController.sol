@@ -179,6 +179,16 @@ contract TokenController {
     /// @dev Emitted when multisig mint pool is ratified
     event MultiSigPoolRefilled();
 
+
+    function init() public {
+        require(!initialized, "already initialized");
+        owner = msg.sender;
+        emit OwnershipTransferred(address(0), owner);
+        initialized = true;
+    }
+
+
+
     /*
     ========================================
     Ownership functions

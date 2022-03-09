@@ -134,7 +134,7 @@ contract OwnedUpgradeabilityProxy {
     event Upgraded(address indexed implementation);
 
     // Storage position of the address of the current implementation
-    bytes32 private constant implementationPosition = 0x6e41e0fbe643dfdb6043698bf865aada82dc46b953f754a3468eaa272a362dc7; //keccak256("trueUSD.proxy.implementation");
+    bytes32 private constant implementationPosition = 0xce8524042c4a802a2b19d17f1d49cec8332cc2f24f7ef723359ddd3bad94d75a; //keccak256("trueUSD.proxy.implementation");
 
     function implementation() public view returns (address impl) {
         bytes32 position = implementationPosition;

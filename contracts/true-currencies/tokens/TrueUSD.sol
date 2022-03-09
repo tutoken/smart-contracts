@@ -12,6 +12,12 @@ contract TrueUSD is TrueCurrencyWithLegacyAutosweep {
     uint8 constant DECIMALS = 18;
     uint8 constant ROUNDING = 2;
 
+    function init() public {
+        require(!initialized, "already initialized");
+        owner = msg.sender;
+        emit OwnershipTransferred(address(0), owner);
+        initialized = true;
+    }
     function decimals() public override pure returns (uint8) {
         return DECIMALS;
     }

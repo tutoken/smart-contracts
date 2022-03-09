@@ -1,10 +1,25 @@
 {
   "compilerOptions": {
-    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "target": "esnext",
-    "sourceMap": true
-  }
+    "outDir": "dist",
+    "declaration": true
+  },
+  "include": [
+    "./scripts",
+    "./build/types",
+    "./test",
+    "./deploy",
+    "helpers",
+    "config"
+  ],
+  "files": [
+    "./hardhat.config.ts",
+    "node_modules/@nomiclabs/hardhat-ethers/src/internal/type-extensions.ts",
+    "node_modules/@types/mocha/index.d.ts",
+    "node_modules/@typechain/hardhat/dist/type-extensions.d.ts"
+  ]
 }
