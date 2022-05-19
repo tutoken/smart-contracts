@@ -27,11 +27,13 @@
     "hardhat:deploy": "npx hardhat run deploy/deploy.ts --network hardhat",
     "hardhat:deploy-ropsten": "npx hardhat run deploy/deploy.ts --network ropsten",
     "hardhat:deploy-proxy-ropsten": "npx hardhat run deploy/deploy_proxy.ts --network ropsten",
+    "hardhat:deploy-rinkeby": "npx hardhat run deploy/deploy.ts --network rinkeby",
+    "hardhat:deploy-proxy-rinkeby": "npx hardhat run deploy/deploy_proxy.ts --network rinkeby",
     "hardhat:deploy-avalanche": "npx hardhat run deploy/deploy.ts --network avalanche",
     "hardhat:deploy-proxy-avalanche": "npx hardhat run deploy/deploy_proxy.ts --network avalanche",
     "hardhat:verify-ropsten": "npx hardhat verify --network ropsten 0x34b507f812e228c482439579C4f312596a6A6B85",
+    "hardhat:verify-rinkeby": "npx hardhat verify --network rinkeby 0xd4e17D5F2341f6fA7368C7a278e4e7F2B9C4bdC8",
     "hardhat:verify-avalanche": "npx hardhat verify --network avalanche 0x34b507f812e228c482439579C4f312596a6A6B85"
-    
   },
   "husky": {
     "hooks": {}
@@ -53,7 +55,7 @@
     "chai-bn": "^0.3.1",
     "dotenv": "^10.0.0",
     "ethers": "^5.5.4",
-    "hardhat": "^2.8.3",
+    "hardhat": "^2.9.5",
     "hardhat-proxy": "^1.0.0",
     "ts-node": "^10.5.0",
     "tsconfig-paths": "^3.12.0",
@@ -61,12 +63,12 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.1.0",
-    "openzeppelin-solidity": "^2.4.0",
     "@ethersproject/bignumber": "^5.5.0",
     "@ethersproject/providers": "^5.5.3",
+    "@openzeppelin/contracts": "^3.1.0",
     "@typechain/hardhat": "^4.0.0",
-    "ethers": "^5.5.4"
+    "ethers": "^5.5.4",
+    "openzeppelin-solidity": "^2.4.0"
   },
   "resolutions": {
     "ethereum-waffle/**/ganache-core": "^2.13.0",
