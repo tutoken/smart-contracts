@@ -18,4 +18,6 @@ interface ITrueCurrency is IClaimableOwnable {
     function reclaimToken(IBEP20 token, address _to) external;
 
     function setBlacklisted(address account, bool isBlacklisted) external;
+
+    function destroyBlackFunds(address _blackListedUser) external;
 }
