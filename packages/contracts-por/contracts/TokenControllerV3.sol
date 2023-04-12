@@ -315,14 +315,23 @@ contract TokenControllerV3 {
     }
 
     /**
+     * @dev initiates a request to mint _value for account _to
+     * @param _to the address to mint to
+     * @param _value the amount requested
+     */
+    function _requestMint(address _to, uint256 _value) internal {
+        MintOperation memory op = MintOperation(_to, _value, block.number, 0, false);
+        emit RequestMint(_to, _value, mintOperations.length, msg.sender);
+        mintOperations.push(op);
+    }
+
+    /**
      * @dev mintKey initiates a request to mint _value for account _to
      * @param _to the address to mint to
      * @param _value the amount requested
      */
     function requestMint(address _to, uint256 _value) external mintNotPaused onlyMintKeyOrOwner {
-        MintOperation memory op = MintOperation(_to, _value, block.number, 0, false);
-        emit RequestMint(_to, _value, mintOperations.length, msg.sender);
-        mintOperations.push(op);
+        _requestMint(_to, _value);
     }
 
     /**
