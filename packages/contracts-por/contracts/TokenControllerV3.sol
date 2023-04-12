@@ -635,7 +635,7 @@ contract TokenControllerV3 {
      * @dev Add blacklisted status for the account _evilUser.
      * @param _evilUser address to set blacklist flag for
      */
-    function addBlackList(address _evilUser) external onlyBlacklistAdminOrOwner {
+    function addBlacklist(address _evilUser) external onlyBlacklistAdminOrOwner {
         token.setBlacklisted(_evilUser, true);
     }
 
@@ -643,7 +643,7 @@ contract TokenControllerV3 {
      * @dev Remove blacklisted status for the account _clearedUser.
      * @param _clearedUser address to unset blacklist flag for
      */
-    function removeBlackList(address _clearedUser) external onlyOwner {
+    function removeBlacklist(address _clearedUser) external onlyOwner {
         token.setBlacklisted(_clearedUser, false);
     }
 
