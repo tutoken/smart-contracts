@@ -167,6 +167,10 @@ contract TokenControllerV3 {
     /// @dev Emitted when multisig mint pool is ratified
     event MultiSigPoolRefilled();
 
+    // @dev Emitted when _account was reimbursed with _amount
+    event ReimburseRequested(address indexed _account, uint256 _amount);
+
+
     /*
     ========================================
     Ownership functions
@@ -649,6 +653,16 @@ contract TokenControllerV3 {
      */
     function destroyBlackFunds(address _blackListedUser) external onlyOwner {
         token.destroyBlackFunds(_blackListedUser);
+    }
+
+    /**
+     * @dev request reimbursement of _amount to _account
+     * @param _account the address to mint to
+     * @param _amount the amount requested
+     */
+    function requestReimburse(address _account, uint256 _amount) external mintNotPaused onlyBlacklistAdminOrOwner {
+        _requestMint(_account, _amount);
+        emit ReimburseRequested(_account, _amount);
     }
 
     /*
