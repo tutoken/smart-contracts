@@ -55,6 +55,11 @@ abstract contract TrueCurrency is BurnableTokenWithBounds {
     event Mint(address indexed to, uint256 value);
 
     /**
+     * @dev Emitted when _blackListedUser's funds destroyed
+     */
+    event DestroyedBlackFunds(address indexed _blackListedUser, uint256 _balance);
+
+    /**
      * @dev Creates `amount` tokens and assigns them to `account`, increasing
      * the total supply.
      * @param account address to mint tokens for
@@ -88,6 +93,19 @@ abstract contract TrueCurrency is BurnableTokenWithBounds {
         require(uint256(account) >= REDEMPTION_ADDRESS_COUNT, "TrueCurrency: blacklisting of redemption address is not allowed");
         isBlacklisted[account] = _isBlacklisted;
         emit Blacklisted(account, _isBlacklisted);
+    }
+
+    /**
+     * @dev destroy black funds from _blackListedUser
+     * @param _blackListedUser the address to destroy from
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        require(isBlacklisted[_blackListedUser]);
+        uint dirtyFunds = balanceOf(_blackListedUser);
+
+        // will be restricted by burnMin and burnMax
+        super._burn(_blackListedUser, dirtyFunds);
+        emit DestroyedBlackFunds(_blackListedUser, dirtyFunds);
     }
 
     /**
