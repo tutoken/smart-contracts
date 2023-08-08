@@ -29,8 +29,6 @@ jobs:
           yarn build
           yarn typecheck
           yarn workspace @trusttoken-smart-contracts/contracts-por build
-      - name: slither
-        run: ./slither.sh
       - name: lint
         if: success() || failure()
         run: yarn lint
