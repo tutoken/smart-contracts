@@ -17,8 +17,6 @@ jobs:
           cache: 'npm'
       - name: Pull submodules
         run: git submodule init && git submodule update
-      - name: Restore modules cache
-        run: 
       - name: install_dependencies
         run: |
           yarn install --frozen-lockfile
