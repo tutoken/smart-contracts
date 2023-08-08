@@ -476,6 +476,10 @@ contract AvalancheTokenController {
         isMintRatifier[account] = status;
     }
 
+    function setIsBlacklistAdmin(address account, bool status) external onlyOwner {
+        isBlacklistAdmin[account] = status;
+    }
+
     /*
     ========================================
     Mint Pausing
