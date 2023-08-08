@@ -27,12 +27,16 @@ jobs:
       - name: slither
         run: ./slither.sh
       - name: lint
+        if: success() || failure()
         run: yarn lint
       - name: lint por
+        if: success() || failure()
         run: yarn workspace @trusttoken-smart-contracts/contracts-por lint
       - name: test por
+        if: success() || failure()
         run: yarn workspace @trusttoken-smart-contracts/contracts-por test
       - name: test-others
+        if: success() || failure()
         run: |
           yarn test:proxy
           yarn test:registry
