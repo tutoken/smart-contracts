@@ -24,6 +24,11 @@ jobs:
           yarn install --frozen-lockfile
           pip3 install -U pip setuptools virtualenv
           pip3 install -r requirements-dev.txt
+      - name:
+        run: |
+          yarn build
+          yarn typecheck
+          yarn workspace @trusttoken-smart-contracts/contracts-por build
       - name: slither
         run: ./slither.sh
       - name: lint
