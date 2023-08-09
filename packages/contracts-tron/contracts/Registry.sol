@@ -42,9 +42,9 @@ contract Registry {
     event StopSubscription(bytes32 indexed attribute, RegistryClone indexed subscriber);
 
     /**
-    * @dev sets the original `owner` of the contract to the sender
-    * at construction. Must then be reinitialized 
-    */
+     * @dev sets the original `owner` of the contract to the sender
+     * at construction. Must then be reinitialized
+     */
     constructor() public {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), owner);

@@ -18,7 +18,6 @@ interface HasOwner {
  * Token Controller with custom init function for testing
  */
 contract TokenControllerMock is TokenController {
-
     // initialize with paramaters. useful for tests
     // sets initial paramaters on testnet
     function initializeWithParams(TrueCurrency _token, Registry _registry) external {
@@ -51,7 +50,6 @@ contract TokenControllerMock is TokenController {
         emit RatifyPoolRefilled();
         emit MultiSigPoolRefilled();
     }
-
 }
 
 contract TokenControllerPauseMock is TokenControllerMock {

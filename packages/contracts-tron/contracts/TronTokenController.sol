@@ -106,7 +106,6 @@ contract TokenController {
         _;
     }
 
-
     modifier onlyRegistryAdmin() {
         require(msg.sender == registryAdmin || msg.sender == owner, "must be registry admin or owner");
         _;
@@ -190,9 +189,9 @@ contract TokenController {
     }
 
     /**
-    * @dev sets the original `owner` of the contract to the sender
-    * at construction. Must then be reinitialized 
-    */
+     * @dev sets the original `owner` of the contract to the sender
+     * at construction. Must then be reinitialized
+     */
     constructor() public {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), owner);
@@ -481,7 +480,6 @@ contract TokenController {
         mintKey = _newMintKey;
     }
 
-
     function setRegistryAdmin(address admin) external onlyOwner {
         registryAdmin = admin;
     }
@@ -644,5 +642,4 @@ contract TokenController {
     function setBlacklisted(address account, bool isBlacklisted) external onlyRegistryAdmin {
         token.setBlacklisted(account, isBlacklisted);
     }
-
 }
