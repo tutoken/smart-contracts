@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
+// prettier-ignore
 /**
  * @dev Interface of the TRC20 standard as defined in the TIP.
  */

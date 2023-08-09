@@ -11,13 +11,14 @@
  */
 
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.0;
+pragma solidity ^0.6.0;
 
 import {ITRC20} from "../interface/ITRC20.sol";
 import {Context} from "@openzeppelin/contracts/GSN/Context.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {ClaimableOwnable} from "./ClaimableOwnable.sol";
 
+// prettier-ignore
 /**
  * @dev Implementation of the {ITRC20} interface.
  *
@@ -48,27 +49,27 @@ abstract contract TRC20 is ClaimableOwnable, Context, ITRC20 {
     /**
      * @dev Returns the name of the token.
      */
-    function name() public virtual pure returns (string memory);
+    function name() public pure virtual returns (string memory);
 
     /**
      * @dev Returns the symbol of the token, usually a shorter version of the
      * name.
      */
-    function symbol() public virtual pure returns (string memory);
+    function symbol() public pure virtual returns (string memory);
 
     /**
      * @dev Returns the number of decimals used to get its user representation.
      * For example, if `decimals` equals `2`, a balance of `505` tokens should
      * be displayed to a user as `5,05` (`505 / 10 ** 2`).
      *
-     * Tokens usually opt for a value of 18. This is the value {TRC20} uses, 
+     * Tokens usually opt for a value of 18. This is the value {TRC20} uses,
      * unless {_setupDecimals} is called.
      *
      * NOTE: This information is only used for _display_ purposes: it in
      * no way affects any of the arithmetic of the contract, including
      * {ITRC20-balanceOf} and {ITRC20-transfer}.
      */
-    function decimals() public virtual pure returns (uint8) {
+    function decimals() public pure virtual returns (uint8) {
         return 18;
     }
 
@@ -273,5 +274,5 @@ abstract contract TRC20 is ClaimableOwnable, Context, ITRC20 {
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     // solhint-disable-next-line no-empty-blocks
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 }

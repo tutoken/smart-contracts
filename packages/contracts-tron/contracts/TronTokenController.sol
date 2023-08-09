@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.0;
+pragma solidity ^0.6.0;
 
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {ITRC20} from "./interface/ITRC20.sol";
@@ -198,9 +198,9 @@ contract TokenController {
     }
 
     /**
-    * @dev sets the original `owner` of the contract to the sender
-    * at construction. Must then be reinitialized 
-    */
+     * @dev sets the original `owner` of the contract to the sender
+     * at construction. Must then be reinitialized
+     */
     constructor() public {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), owner);
@@ -214,11 +214,19 @@ contract TokenController {
         instantMintThreshold = 150_000_000_000_000_000_000_000_000;
         ratifiedMintThreshold = 300_000_000_000_000_000_000_000_000;
         multiSigMintThreshold = 1_000_000_000_000_000_000_000_000_000;
-        emit MintThresholdChanged(150_000_000_000_000_000_000_000_000, 300_000_000_000_000_000_000_000_000, 1_000_000_000_000_000_000_000_000_000);
+        emit MintThresholdChanged(
+            150_000_000_000_000_000_000_000_000,
+            300_000_000_000_000_000_000_000_000,
+            1_000_000_000_000_000_000_000_000_000
+        );
         instantMintLimit = 150_000_000_000_000_000_000_000_000;
         ratifiedMintLimit = 300_000_000_000_000_000_000_000_000;
         multiSigMintLimit = 1_000_000_000_000_000_000_000_000_000;
-        emit MintLimitsChanged(150_000_000_000_000_000_000_000_000, 300_000_000_000_000_000_000_000_000, 1_000_000_000_000_000_000_000_000_000);
+        emit MintLimitsChanged(
+            150_000_000_000_000_000_000_000_000,
+            300_000_000_000_000_000_000_000_000,
+            1_000_000_000_000_000_000_000_000_000
+        );
 
         initialized = true;
     }
@@ -497,7 +505,6 @@ contract TokenController {
         emit TransferMintKey(mintKey, _newMintKey);
         mintKey = _newMintKey;
     }
-
 
     function setRegistryAdmin(address admin) external onlyOwner {
         registryAdmin = admin;
