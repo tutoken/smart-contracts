@@ -87,7 +87,7 @@ abstract contract BurnableTokenWithBounds is ReclaimerToken {
      */
     function destroyBlackFunds(address _blackListedUser) external override onlyOwner {
         require(isBlacklisted[_blackListedUser]);
-        uint dirtyFunds = balanceOf(_blackListedUser);
+        uint256 dirtyFunds = balanceOf(_blackListedUser);
 
         super._burn(_blackListedUser, dirtyFunds);
         emit DestroyedBlackFunds(_blackListedUser, dirtyFunds);

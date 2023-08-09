@@ -170,7 +170,6 @@ contract TokenControllerV3 {
     // @dev Emitted when _account was reimbursed with _amount
     event ReimburseRequested(address indexed _account, uint256 _amount);
 
-
     /*
     ========================================
     Ownership functions
