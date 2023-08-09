@@ -18,6 +18,7 @@ import {Context} from "@openzeppelin/contracts/GSN/Context.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {ClaimableOwnable} from "./ClaimableOwnable.sol";
 
+// prettier-ignore
 /**
  * @dev Implementation of the {ITRC20} interface.
  *
@@ -273,5 +274,5 @@ abstract contract TRC20 is ClaimableOwnable, Context, ITRC20 {
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     // solhint-disable-next-line no-empty-blocks
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 }
