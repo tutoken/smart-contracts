@@ -48,13 +48,13 @@ abstract contract TRC20 is ClaimableOwnable, Context, ITRC20 {
     /**
      * @dev Returns the name of the token.
      */
-    function name() public virtual pure returns (string memory);
+    function name() public pure virtual returns (string memory);
 
     /**
      * @dev Returns the symbol of the token, usually a shorter version of the
      * name.
      */
-    function symbol() public virtual pure returns (string memory);
+    function symbol() public pure virtual returns (string memory);
 
     /**
      * @dev Returns the number of decimals used to get its user representation.
@@ -68,7 +68,7 @@ abstract contract TRC20 is ClaimableOwnable, Context, ITRC20 {
      * no way affects any of the arithmetic of the contract, including
      * {ITRC20-balanceOf} and {ITRC20-transfer}.
      */
-    function decimals() public virtual pure returns (uint8) {
+    function decimals() public pure virtual returns (uint8) {
         return 18;
     }
 
