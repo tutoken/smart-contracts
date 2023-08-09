@@ -216,17 +216,19 @@ contract BscTokenController {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), owner);
 
+        // prettier-ignore
         setMintThresholds(
             150 * MILLION * 10**DECIMALS,
             300 * MILLION * 10**DECIMALS,
             1_000 * MILLION * 10**DECIMALS
         );
 
+        // prettier-ignore
         setMintLimits(
             150 * MILLION * 10**DECIMALS,
             300 * MILLION * 10**DECIMALS,
             1_000 * MILLION * 10**DECIMALS
-        );   
+        );
     }
 
     /**

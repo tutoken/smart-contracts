@@ -8,7 +8,7 @@
  * - Solidity version changed from ^0.6.0 to 0.6.10
  * - Contract made abstract
  * - Add getOwner() pointing to owner
- * - Change ERC20 to BEP20 in comments 
+ * - Change ERC20 to BEP20 in comments
  *
  * See also: ClaimableOwnable.sol and ProxyStorage.sol
  */
