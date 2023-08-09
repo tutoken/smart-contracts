@@ -30,6 +30,7 @@ jobs:
           yarn typecheck
           yarn workspace @trusttoken-smart-contracts/contracts-por build
           yarn workspace @trusttoken-smart-contracts/contracts-tron build
+          yarn workspace @trusttoken-smart-contracts/contracts-bsc build
       - name: lint
         if: success() || failure()
         run: yarn lint
@@ -45,6 +46,12 @@ jobs:
       - name: test tron
         if: success() || failure()
         run: yarn workspace @trusttoken-smart-contracts/contracts-tron test
+      - name: lint bsc
+        if: success() || failure()
+        run: yarn workspace @trusttoken-smart-contracts/contracts-bsc lint
+      - name: test bsc
+        if: success() || failure()
+        run: yarn workspace @trusttoken-smart-contracts/contracts-bsc test
       - name: test-others
         if: success() || failure()
         run: |
