@@ -693,5 +693,4 @@ contract TokenController {
         _requestMint(_account, _amount);
         emit ReimburseRequested(_account, _amount);
     }
-
 }
