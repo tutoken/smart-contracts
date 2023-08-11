@@ -680,7 +680,7 @@ describe('TokenController', () => {
       await expect(avaController.removeBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
         .withArgs(otherWallet.address, false)
     })
-  
+
     it('sets blacklisted status for the account by blacklistAdmin', async () => {
       await expect(avaController.connect(blacklistAdmin).addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
         .withArgs(otherWallet.address, true)
@@ -732,5 +732,4 @@ describe('TokenController', () => {
         .to.be.revertedWith('TokenController: Must be blacklist admin or owner')
     })
   })
-
 })
