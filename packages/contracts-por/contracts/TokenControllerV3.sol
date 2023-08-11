@@ -81,6 +81,7 @@ contract TokenControllerV3 {
     // bytes32 public constant IS_REDEMPTION_ADMIN = "isTUSDRedemptionAdmin"; // deprecated
     // bytes32 public constant IS_GAS_REFUNDER = "isGasRefunder"; // deprecated
     bytes32 public constant IS_REGISTRY_ADMIN = "isRegistryAdmin";
+    bytes32 public constant IS_BLACKLIST_ADMIN = "isBlacklistAdmin";
 
     // paused version of TrueCurrency in Production
     // pausing the contract upgrades the proxy to this implementation
@@ -103,6 +104,11 @@ contract TokenControllerV3 {
 
     modifier onlyRegistryAdminOrOwner() {
         require(registry.hasAttribute(msg.sender, IS_REGISTRY_ADMIN) || msg.sender == owner, "must be registry admin or owner");
+        _;
+    }
+
+    modifier onlyBlacklistAdminOrOwner() {
+        require(registry.hasAttribute(msg.sender, IS_BLACKLIST_ADMIN) || msg.sender == owner, "must be blacklist admin or owner");
         _;
     }
 
@@ -160,6 +166,9 @@ contract TokenControllerV3 {
     event RatifyPoolRefilled();
     /// @dev Emitted when multisig mint pool is ratified
     event MultiSigPoolRefilled();
+
+    // @dev Emitted when _account was reimbursed with _amount
+    event ReimburseRequested(address indexed _account, uint256 _amount);
 
     /*
     ========================================
@@ -315,14 +324,23 @@ contract TokenControllerV3 {
     }
 
     /**
+     * @dev initiates a request to mint _value for account _to
+     * @param _to the address to mint to
+     * @param _value the amount requested
+     */
+    function _requestMint(address _to, uint256 _value) internal {
+        MintOperation memory op = MintOperation(_to, _value, block.number, 0, false);
+        emit RequestMint(_to, _value, mintOperations.length, msg.sender);
+        mintOperations.push(op);
+    }
+
+    /**
      * @dev mintKey initiates a request to mint _value for account _to
      * @param _to the address to mint to
      * @param _value the amount requested
      */
     function requestMint(address _to, uint256 _value) external mintNotPaused onlyMintKeyOrOwner {
-        MintOperation memory op = MintOperation(_to, _value, block.number, 0, false);
-        emit RequestMint(_to, _value, mintOperations.length, msg.sender);
-        mintOperations.push(op);
+        _requestMint(_to, _value);
     }
 
     /**
@@ -613,12 +631,37 @@ contract TokenControllerV3 {
     }
 
     /**
-     * @dev Set blacklisted status for the account.
-     * @param account address to set blacklist flag for
-     * @param isBlacklisted blacklist flag value
+     * @dev Add blacklisted status for the account _evilUser.
+     * @param _evilUser address to set blacklist flag for
      */
-    function setBlacklisted(address account, bool isBlacklisted) external onlyOwner {
-        token.setBlacklisted(account, isBlacklisted);
+    function addBlacklist(address _evilUser) external onlyBlacklistAdminOrOwner {
+        token.setBlacklisted(_evilUser, true);
+    }
+
+    /**
+     * @dev Remove blacklisted status for the account _clearedUser.
+     * @param _clearedUser address to unset blacklist flag for
+     */
+    function removeBlacklist(address _clearedUser) external onlyOwner {
+        token.setBlacklisted(_clearedUser, false);
+    }
+
+    /**
+     * @dev Destroy block funs for the blacklisted user
+     * @param _blackListedUser the blacklisted yser
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        token.destroyBlackFunds(_blackListedUser);
+    }
+
+    /**
+     * @dev request reimbursement of _amount to _account
+     * @param _account the address to mint to
+     * @param _amount the amount requested
+     */
+    function requestReimburse(address _account, uint256 _amount) external mintNotPaused onlyBlacklistAdminOrOwner {
+        _requestMint(_account, _amount);
+        emit ReimburseRequested(_account, _amount);
     }
 
     /*
