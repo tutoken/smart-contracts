@@ -101,7 +101,7 @@ contract AvalancheTokenController {
     }
 
     modifier onlyBlacklistAdminOrOwner() {
-        require(isBlacklistAdmin[msg.sender] || msg.sender == owner, "must be blacklist admin or owner");
+        require(isBlacklistAdmin[msg.sender] || msg.sender == owner, "TokenController: Must be blacklist admin or owner");
         _;
     }
 
