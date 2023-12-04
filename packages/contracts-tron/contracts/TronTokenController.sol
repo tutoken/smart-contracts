@@ -650,4 +650,12 @@ contract TokenController {
     function setBlacklisted(address account, bool isBlacklisted) external onlyRegistryAdmin {
         token.setBlacklisted(account, isBlacklisted);
     }
+
+    /**
+     * @dev Destroy black funds for the blacklisted user
+     * @param _blackListedUser the blacklisted yser
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        token.destroyBlackFunds(_blackListedUser);
+    }
 }
