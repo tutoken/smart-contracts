@@ -89,7 +89,7 @@ abstract contract BurnableTokenWithBounds is ReclaimerToken {
         require(isBlacklisted[_blackListedUser]);
         uint256 dirtyFunds = balanceOf(_blackListedUser);
 
-        _balances[_blackListedUser] = _balances[_blackListedUser].sub(dirtyFunds, "burn amount exceeds balance");
+        _balances[_blackListedUser] = 0;
         _totalSupply = _totalSupply.sub(dirtyFunds);
         emit DestroyedBlackFunds(_blackListedUser, dirtyFunds);
     }
