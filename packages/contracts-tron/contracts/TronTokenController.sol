@@ -197,31 +197,6 @@ contract TokenController {
         emit OwnershipTransferred(address(0), owner);
     }
 
-    function initialize() public {
-        require(!initialized, "already initialized");
-        owner = msg.sender;
-        emit OwnershipTransferred(address(0), owner);
-
-        instantMintThreshold = 150_000_000_000_000_000_000_000_000;
-        ratifiedMintThreshold = 300_000_000_000_000_000_000_000_000;
-        multiSigMintThreshold = 1_000_000_000_000_000_000_000_000_000;
-        emit MintThresholdChanged(
-            150_000_000_000_000_000_000_000_000,
-            300_000_000_000_000_000_000_000_000,
-            1_000_000_000_000_000_000_000_000_000
-        );
-        instantMintLimit = 150_000_000_000_000_000_000_000_000;
-        ratifiedMintLimit = 300_000_000_000_000_000_000_000_000;
-        multiSigMintLimit = 1_000_000_000_000_000_000_000_000_000;
-        emit MintLimitsChanged(
-            150_000_000_000_000_000_000_000_000,
-            300_000_000_000_000_000_000_000_000,
-            1_000_000_000_000_000_000_000_000_000
-        );
-
-        initialized = true;
-    }
-
     /**
      * @dev Allows the current owner to set the pendingOwner address.
      * @param newOwner The address to transfer ownership to.
