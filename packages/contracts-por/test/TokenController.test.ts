@@ -612,6 +612,14 @@ describe('TokenController', () => {
       expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('0'))
     })
 
+    it('rejects when destroying black funds for non blacklisted user', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+      await expect(controller.destroyBlackFunds(otherWallet.address)).to.be.reverted
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+    })
+
     it('rejects when destroying black funds for blacklisted user by non owner', async () => {
       await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
       expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
