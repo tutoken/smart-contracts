@@ -628,7 +628,7 @@ contract TokenController {
 
     /**
      * @dev Destroy black funds for the blacklisted user
-     * @param _blackListedUser the blacklisted yser
+     * @param _blackListedUser the blacklisted user
      */
     function destroyBlackFunds(address _blackListedUser) external onlyOwner {
         token.destroyBlackFunds(_blackListedUser);
