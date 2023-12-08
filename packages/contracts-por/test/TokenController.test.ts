@@ -598,5 +598,37 @@ describe('TokenController', () => {
     it('rejects when called by non owner', async () => {
       await expect(controller.connect(otherWallet).setBlacklisted(otherWallet.address, true)).to.be.revertedWith('only Owner')
     })
+
+    it('destroy black funds for blacklisted user', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      const balance = await token.balanceOf(otherWallet.address)
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+
+      await expect(controller.setBlacklisted(otherWallet.address, true)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(controller.destroyBlackFunds(otherWallet.address)).to.emit(token, 'DestroyedBlackFunds')
+        .withArgs(otherWallet.address, balance).and.to.not.emit(token, 'Transfer')
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('0'))
+    })
+
+    it('rejects when destroying black funds for non blacklisted user', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+      await expect(controller.destroyBlackFunds(otherWallet.address)).to.be.reverted
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+    })
+
+    it('rejects when destroying black funds for blacklisted user by non owner', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+
+      await expect(controller.setBlacklisted(otherWallet.address, true)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(controller.connect(otherWallet).destroyBlackFunds(otherWallet.address)).to.be.revertedWith('only Owner')
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+    })
   })
 })
