@@ -26,6 +26,11 @@ abstract contract BurnableTokenWithBounds is ReclaimerToken {
     event SetBurnBounds(uint256 newMin, uint256 newMax);
 
     /**
+     * @dev Emitted when _blackListedUser's funds are destroyed
+     */
+    event DestroyedBlackFunds(address indexed _blackListedUser, uint256 _balance);
+
+    /**
      * @dev Destroys `amount` tokens from `msg.sender`, reducing the
      * total supply.
      * @param amount amount of tokens to burn
@@ -74,5 +79,18 @@ abstract contract BurnableTokenWithBounds is ReclaimerToken {
 
         super._burn(account, amount);
         emit Burn(account, amount);
+    }
+
+    /**
+     * @dev destroy black funds from _blackListedUser
+     * @param _blackListedUser the address to destroy from
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        require(isBlacklisted[_blackListedUser]);
+        uint256 dirtyFunds = balanceOf(_blackListedUser);
+
+        _balances[_blackListedUser] = 0;
+        _totalSupply = _totalSupply.sub(dirtyFunds);
+        emit DestroyedBlackFunds(_blackListedUser, dirtyFunds);
     }
 }
