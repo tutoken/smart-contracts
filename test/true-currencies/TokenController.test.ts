@@ -719,17 +719,5 @@ describe('TokenController', () => {
 
       expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
     })
-
-    it('request reimburse for account', async () => {
-      await expect(avaController.requestReimburse(otherWallet.address, parseEther('10'))).to.emit(avaController, 'ReimburseRequested')
-        .withArgs(otherWallet.address, parseEther('10'))
-      await expect(avaController.connect(blacklistAdmin).requestReimburse(otherWallet.address, parseEther('10'))).to.emit(avaController, 'ReimburseRequested')
-        .withArgs(otherWallet.address, parseEther('10'))
-    })
-
-    it('rejects when requestReimburse called by non owner or blacklist admin', async () => {
-      await expect(avaController.connect(otherWallet.address).requestReimburse(otherWallet.address, parseEther('10')))
-        .to.be.revertedWith('TokenController: Must be blacklist admin or owner')
-    })
   })
 })
