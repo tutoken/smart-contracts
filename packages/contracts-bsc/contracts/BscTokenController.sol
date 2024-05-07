@@ -78,6 +78,7 @@ contract BscTokenController {
     bytes32 public constant IS_MINT_PAUSER = "isTUSDMintPausers";
     bytes32 public constant IS_MINT_RATIFIER = "isTUSDMintRatifier";
     bytes32 public constant IS_REGISTRY_ADMIN = "isRegistryAdmin";
+    bytes32 public constant IS_BLACKLIST_ADMIN = "isBlacklistAdmin";
 
     // paused version of TrueCurrency in Production
     // pausing the contract upgrades the proxy to this implementation
@@ -103,6 +104,11 @@ contract BscTokenController {
 
     modifier onlyRegistryAdminOrOwner() {
         require(registry.hasAttribute(msg.sender, IS_REGISTRY_ADMIN) || msg.sender == owner, "must be registry admin or owner");
+        _;
+    }
+
+    modifier onlyBlacklistAdminOrOwner() {
+        require(registry.hasAttribute(msg.sender, IS_BLACKLIST_ADMIN) || msg.sender == owner, "must be blacklist admin or owner");
         _;
     }
 
@@ -207,17 +213,19 @@ contract BscTokenController {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), owner);
 
+        // prettier-ignore
         setMintThresholds(
             150 * MILLION * 10**DECIMALS,
             300 * MILLION * 10**DECIMALS,
             1_000 * MILLION * 10**DECIMALS
         );
 
+        // prettier-ignore
         setMintLimits(
             150 * MILLION * 10**DECIMALS,
             300 * MILLION * 10**DECIMALS,
             1_000 * MILLION * 10**DECIMALS
-        );   
+        );
     }
 
     /**
@@ -644,12 +652,27 @@ contract BscTokenController {
     }
 
     /**
-     * @dev Set blacklisted status for the account.
-     * @param account address to set blacklist flag for
-     * @param isBlacklisted blacklist flag value
+     * @dev Add blacklisted status for the account _evilUser.
+     * @param _evilUser address to set blacklist flag for
      */
-    function setBlacklisted(address account, bool isBlacklisted) external onlyOwner {
-        token.setBlacklisted(account, isBlacklisted);
+    function addBlacklist(address _evilUser) external onlyBlacklistAdminOrOwner {
+        token.setBlacklisted(_evilUser, true);
+    }
+
+    /**
+     * @dev Remove blacklisted status for the account _clearedUser.
+     * @param _clearedUser address to unset blacklist flag for
+     */
+    function removeBlacklist(address _clearedUser) external onlyOwner {
+        token.setBlacklisted(_clearedUser, false);
+    }
+
+    /**
+     * @dev Destroy block funs for the blacklisted user
+     * @param _blackListedUser the blacklisted yser
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        token.destroyBlackFunds(_blackListedUser);
     }
 
     /*
