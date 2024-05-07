@@ -166,9 +166,6 @@ contract BscTokenController {
     /// @dev Emitted when multisig mint pool is ratified
     event MultiSigPoolRefilled();
 
-    // @dev Emitted when _account was reimbursed with _amount
-    event ReimburseRequested(address indexed _account, uint256 _amount);
-
     /*
     ========================================
     Ownership functions
@@ -377,23 +374,14 @@ contract BscTokenController {
     }
 
     /**
-     * @dev initiates a request to mint _value for account _to
-     * @param _to the address to mint to
-     * @param _value the amount requested
-     */
-    function _requestMint(address _to, uint256 _value) internal {
-        MintOperation memory op = MintOperation(_to, _value, block.number, 0, false);
-        emit RequestMint(_to, _value, mintOperations.length, msg.sender);
-        mintOperations.push(op);
-    }
-
-    /**
      * @dev mintKey initiates a request to mint _value for account _to
      * @param _to the address to mint to
      * @param _value the amount requested
      */
     function requestMint(address _to, uint256 _value) external mintNotPaused onlyMintKeyOrOwner {
-        _requestMint(_to, _value);
+        MintOperation memory op = MintOperation(_to, _value, block.number, 0, false);
+        emit RequestMint(_to, _value, mintOperations.length, msg.sender);
+        mintOperations.push(op);
     }
 
     /**
@@ -685,16 +673,6 @@ contract BscTokenController {
      */
     function destroyBlackFunds(address _blackListedUser) external onlyOwner {
         token.destroyBlackFunds(_blackListedUser);
-    }
-
-    /**
-     * @dev request reimbursement of _amount to _account
-     * @param _account the address to mint to
-     * @param _amount the amount requested
-     */
-    function requestReimburse(address _account, uint256 _amount) external mintNotPaused onlyBlacklistAdminOrOwner {
-        _requestMint(_account, _amount);
-        emit ReimburseRequested(_account, _amount);
     }
 
     /*
