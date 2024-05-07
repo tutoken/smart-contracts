@@ -81,6 +81,7 @@ contract TokenController {
     bytes32 public constant IS_MINT_PAUSER = "isTUSDMintPausers";
     bytes32 public constant IS_MINT_RATIFIER = "isTUSDMintRatifier";
     bytes32 public constant IS_REDEMPTION_ADMIN = "isTUSDRedemptionAdmin";
+    bytes32 public constant IS_BLACKLIST_ADMIN = "isBlacklistAdmin";
 
     // paused version of TrueCurrency in Production
     // pausing the contract upgrades the proxy to this implementation
@@ -108,6 +109,11 @@ contract TokenController {
 
     modifier onlyRegistryAdmin() {
         require(msg.sender == registryAdmin || msg.sender == owner, "must be registry admin or owner");
+        _;
+    }
+
+    modifier onlyBlacklistAdminOrOwner() {
+        require(registry.hasAttribute(msg.sender, IS_BLACKLIST_ADMIN) || msg.sender == owner, "must be blacklist admin or owner");
         _;
     }
 
@@ -618,12 +624,19 @@ contract TokenController {
     }
 
     /**
-     * @dev Set blacklisted status for the account.
-     * @param account address to set blacklist flag for
-     * @param isBlacklisted blacklist flag value
+     * @dev Add blacklisted status for the account _evilUser.
+     * @param _evilUser address to set blacklist flag for
      */
-    function setBlacklisted(address account, bool isBlacklisted) external onlyRegistryAdmin {
-        token.setBlacklisted(account, isBlacklisted);
+    function addBlacklist(address _evilUser) external onlyBlacklistAdminOrOwner {
+        token.setBlacklisted(_evilUser, true);
+    }
+
+    /**
+     * @dev Remove blacklisted status for the account _clearedUser.
+     * @param _clearedUser address to unset blacklist flag for
+     */
+    function removeBlacklist(address _clearedUser) external onlyOwner {
+        token.setBlacklisted(_clearedUser, false);
     }
 
     /**
