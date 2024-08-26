@@ -18,6 +18,13 @@ interface HasOwner {
  * Token Controller with custom init function for testing
  */
 contract TokenControllerMock is TokenController {
+    // initalize controller. useful for tests
+    function initialize() external {
+        require(!initialized, "already initialized");
+        owner = msg.sender;
+        initialized = true;
+    }
+
     // initialize with paramaters. useful for tests
     // sets initial paramaters on testnet
     function initializeWithParams(TrueCurrency _token, Registry _registry) external {

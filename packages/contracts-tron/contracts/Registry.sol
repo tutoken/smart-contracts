@@ -50,13 +50,6 @@ contract Registry {
         emit OwnershipTransferred(address(0), owner);
     }
 
-    function initialize() public {
-        require(!initialized, "already initialized");
-        owner = msg.sender;
-        emit OwnershipTransferred(address(0), owner);
-        initialized = true;
-    }
-
     // Allows a write if either a) the writer is that Registry's owner, or
     // b) the writer is writing to attribute foo and that writer already has
     // the canWriteTo-foo attribute set (in that same Registry)
