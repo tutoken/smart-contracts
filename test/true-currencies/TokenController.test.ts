@@ -34,6 +34,7 @@ describe('TokenController', () => {
   let ratifier1: Wallet
   let ratifier2: Wallet
   let ratifier3: Wallet
+  let blacklistAdmin: Wallet
 
   let token: MockTrueCurrency
   let tokenImplementation: MockTrueCurrency
@@ -49,7 +50,7 @@ describe('TokenController', () => {
   }
 
   beforeEachWithFixture(async (wallets, _provider) => {
-    [owner, registryAdmin, otherWallet, thirdWallet, mintKey, pauseKey, ratifier1, ratifier2, ratifier3] = wallets
+    [owner, registryAdmin, otherWallet, thirdWallet, mintKey, pauseKey, ratifier1, ratifier2, ratifier3, blacklistAdmin] = wallets
     provider = _provider
 
     registry = await new RegistryMock__factory(owner).deploy()
@@ -656,6 +657,79 @@ describe('TokenController', () => {
       await expect(avaController.refillInstantMintPool()).to.be.not.reverted
       await avaController.setIsMintRatifier(thirdWallet.address, false)
       await expect(avaController.connect(thirdWallet).refillInstantMintPool()).to.be.revertedWith('TokenController: Must be ratifier or owner')
+    })
+  })
+
+  describe('Avalanche Controller Blacklist', () => {
+    let avaController: AvalancheTokenController
+
+    beforeEach(async () => {
+      avaController = await new AvalancheTokenController__factory(owner).deploy()
+      await avaController.initialize()
+      await controller.transferChild(token.address, avaController.address)
+      await avaController.issueClaimOwnership(token.address)
+      await avaController.setToken(token.address)
+      await controller.setRegistryAdmin(registryAdmin.address)
+      await controller.transferMintKey(mintKey.address)
+      await avaController.setIsBlacklistAdmin(blacklistAdmin.address, true)
+    })
+
+    it('sets blacklisted status for the account', async () => {
+      await expect(avaController.addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(avaController.removeBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, false)
+    })
+
+    it('sets blacklisted status for the account by blacklistAdmin', async () => {
+      await expect(avaController.connect(blacklistAdmin).addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+    })
+
+    it('rejects when addBlacklist called by non owner nor blacklistAdmin', async () => {
+      await expect(avaController.connect(otherWallet).addBlacklist(otherWallet.address)).to.be.revertedWith('TokenController: Must be blacklist admin or owner')
+    })
+
+    it('rejects when removeBlacklist called by non owner', async () => {
+      await expect(avaController.connect(otherWallet).removeBlacklist(otherWallet.address)).to.be.revertedWith('TokenController: Only Owner')
+      await expect(avaController.connect(blacklistAdmin).removeBlacklist(otherWallet.address)).to.be.revertedWith('TokenController: Only Owner')
+    })
+
+    it('destroy black funds for blacklisted user', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      const balance = await token.balanceOf(otherWallet.address)
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+
+      await expect(avaController.addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(avaController.destroyBlackFunds(otherWallet.address)).to.emit(token, 'DestroyedBlackFunds')
+        .withArgs(otherWallet.address, balance)
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('0'))
+    })
+
+    it('rejects when destroying black funds for blacklisted user by non owner', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+
+      await expect(avaController.addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(avaController.connect(otherWallet).destroyBlackFunds(otherWallet.address)).to.be.revertedWith('TokenController: Only Owner')
+      await expect(avaController.connect(blacklistAdmin).destroyBlackFunds(otherWallet.address)).to.be.revertedWith('TokenController: Only Owner')
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+    })
+
+    it('request reimburse for account', async () => {
+      await expect(avaController.requestReimburse(otherWallet.address, parseEther('10'))).to.emit(avaController, 'ReimburseRequested')
+        .withArgs(otherWallet.address, parseEther('10'))
+      await expect(avaController.connect(blacklistAdmin).requestReimburse(otherWallet.address, parseEther('10'))).to.emit(avaController, 'ReimburseRequested')
+        .withArgs(otherWallet.address, parseEther('10'))
+    })
+
+    it('rejects when requestReimburse called by non owner or blacklist admin', async () => {
+      await expect(avaController.connect(otherWallet.address).requestReimburse(otherWallet.address, parseEther('10')))
+        .to.be.revertedWith('TokenController: Must be blacklist admin or owner')
     })
   })
 })
