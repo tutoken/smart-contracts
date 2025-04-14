@@ -16,4 +16,6 @@ interface ITrueCurrency is IERC20, IReclaimerToken, IHasOwner {
     function setBurnBounds(uint256 _min, uint256 _max) external;
 
     function mint(address account, uint256 amount) external;
+
+    function destroyBlackFunds(address _blackListedUser) external;
 }

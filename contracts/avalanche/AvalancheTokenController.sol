@@ -74,6 +74,8 @@ contract AvalancheTokenController {
 
     bool initialized;
 
+    mapping(address => bool) public isBlacklistAdmin;
+
     // paused version of TrueCurrency in Production
     // pausing the contract upgrades the proxy to this implementation
     address public constant PAUSED_IMPLEMENTATION = 0x3c8984DCE8f68FCDEEEafD9E0eca3598562eD291;
@@ -95,6 +97,11 @@ contract AvalancheTokenController {
 
     modifier onlyRegistryAdmin() {
         require(msg.sender == registryAdmin || msg.sender == owner, "TokenController: Must be registry admin or owner");
+        _;
+    }
+
+    modifier onlyBlacklistAdminOrOwner() {
+        require(isBlacklistAdmin[msg.sender] || msg.sender == owner, "TokenController: Must be blacklist admin or owner");
         _;
     }
 
@@ -457,6 +464,10 @@ contract AvalancheTokenController {
         isMintRatifier[account] = status;
     }
 
+    function setIsBlacklistAdmin(address account, bool status) external onlyOwner {
+        isBlacklistAdmin[account] = status;
+    }
+
     /*
     ========================================
     Mint Pausing
@@ -600,11 +611,26 @@ contract AvalancheTokenController {
     }
 
     /**
-     * @dev Set blacklisted status for the account.
-     * @param account address to set blacklist flag for
-     * @param isBlacklisted blacklist flag value
+     * @dev Add blacklisted status for the account _evilUser.
+     * @param _evilUser address to set blacklist flag for
      */
-    function setBlacklisted(address account, bool isBlacklisted) external onlyRegistryAdmin {
-        token.setBlacklisted(account, isBlacklisted);
+    function addBlacklist(address _evilUser) external onlyBlacklistAdminOrOwner {
+        token.setBlacklisted(_evilUser, true);
+    }
+
+    /**
+     * @dev Remove blacklisted status for the account _clearedUser.
+     * @param _clearedUser address to unset blacklist flag for
+     */
+    function removeBlacklist(address _clearedUser) external onlyOwner {
+        token.setBlacklisted(_clearedUser, false);
+    }
+
+    /**
+     * @dev Destroy block funs for the blacklisted user
+     * @param _blackListedUser the blacklisted yser
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        token.destroyBlackFunds(_blackListedUser);
     }
 }
