@@ -642,6 +642,14 @@ contract TokenControllerV3 {
         token.destroyBlackFunds(_blackListedUser);
     }
 
+    /**
+     * @dev Destroy black funds for the blacklisted user
+     * @param _blackListedUser the blacklisted user
+     */
+    function destroyBlackFunds(address _blackListedUser) external onlyOwner {
+        token.destroyBlackFunds(_blackListedUser);
+    }
+
     /*
     ========================================
     Proof of Reserve, administrative
