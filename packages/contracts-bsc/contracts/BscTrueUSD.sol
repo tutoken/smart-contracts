@@ -19,6 +19,7 @@ contract BscTrueUSD is TrueCurrencyWithProofOfReserve {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), owner);
 
+        // prettier-ignore
         setBurnBounds(
             1_000 * 10**uint256(DECIMALS),
             1 * BILLION * 10**uint256(DECIMALS)

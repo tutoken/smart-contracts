@@ -32,6 +32,7 @@ describe('TokenController', () => {
   let ratifier1: Wallet
   let ratifier2: Wallet
   let ratifier3: Wallet
+  let blacklistAdmin: Wallet
 
   let token: MockTrueCurrency
   let tokenImplementation: MockTrueCurrency
@@ -47,7 +48,7 @@ describe('TokenController', () => {
   }
 
   beforeEachWithFixture(async (wallets, _provider) => {
-    [owner, otherWallet, thirdWallet, mintKey, pauseKey, ratifier1, ratifier2, ratifier3] = wallets
+    [owner, otherWallet, thirdWallet, mintKey, pauseKey, ratifier1, ratifier2, ratifier3, blacklistAdmin] = wallets
     provider = _provider
 
     registry = await new RegistryMock__factory(owner).deploy()
@@ -73,6 +74,7 @@ describe('TokenController', () => {
     await registry.setAttribute(ratifier2.address, formatBytes32String('isTUSDMintRatifier'), 1, notes, { gasLimit: 5_000_000 })
     await registry.setAttribute(ratifier3.address, formatBytes32String('isTUSDMintRatifier'), 1, notes, { gasLimit: 5_000_000 })
     await registry.setAttribute(pauseKey.address, formatBytes32String('isTUSDMintPausers'), 1, notes)
+    await registry.setAttribute(blacklistAdmin.address, formatBytes32String('isBlacklistAdmin'), 1, notes)
     await controller.setMintThresholds(parseEther('200'), parseEther('1000'), parseEther('1001'))
     await controller.setMintLimits(parseEther('200'), parseEther('300'), parseEther('3000'))
     await controller.refillMultiSigMintPool()
@@ -587,16 +589,51 @@ describe('TokenController', () => {
     })
   })
 
-  describe('setBlacklisted', () => {
+  describe('Blacklist', () => {
     it('sets blacklisted status for the account', async () => {
-      await expect(controller.setBlacklisted(otherWallet.address, true)).to.emit(token, 'Blacklisted')
+      await expect(controller.addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
         .withArgs(otherWallet.address, true)
-      await expect(controller.setBlacklisted(otherWallet.address, false)).to.emit(token, 'Blacklisted')
+      await expect(controller.removeBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
         .withArgs(otherWallet.address, false)
     })
 
-    it('rejects when called by non owner', async () => {
-      await expect(controller.connect(otherWallet).setBlacklisted(otherWallet.address, true)).to.be.revertedWith('only Owner')
+    it('sets blacklisted status for the account by blacklistAdmin', async () => {
+      await expect(controller.connect(blacklistAdmin).addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+    })
+
+    it('rejects when addBlacklist called by non owner nor blacklistAdmin', async () => {
+      await expect(controller.connect(otherWallet).addBlacklist(otherWallet.address)).to.be.revertedWith('only Owner')
+    })
+
+    it('rejects when removeBlacklist called by non owner', async () => {
+      await expect(controller.connect(otherWallet).removeBlacklist(otherWallet.address)).to.be.revertedWith('only Owner')
+      await expect(controller.connect(blacklistAdmin).removeBlacklist(otherWallet.address)).to.be.revertedWith('only Owner')
+    })
+
+    it('destroy black funds for blacklisted user', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      const balance = await token.balanceOf(otherWallet.address)
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+
+      await expect(controller.addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(controller.destroyBlackFunds(otherWallet.address)).to.emit(token, 'DestroyedBlackFunds')
+        .withArgs(otherWallet.address, balance)
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('0'))
+    })
+
+    it('rejects when destroying black funds for blacklisted user by non owner', async () => {
+      await token.connect(thirdWallet).transfer(otherWallet.address, parseEther('10'))
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
+
+      await expect(controller.addBlacklist(otherWallet.address)).to.emit(token, 'Blacklisted')
+        .withArgs(otherWallet.address, true)
+      await expect(controller.connect(otherWallet).destroyBlackFunds(otherWallet.address)).to.be.revertedWith('only Owner')
+      await expect(controller.connect(blacklistAdmin).destroyBlackFunds(otherWallet.address)).to.be.revertedWith('only Owner')
+
+      expect(await token.balanceOf(otherWallet.address)).to.equal(parseEther('10'))
     })
   })
 })
