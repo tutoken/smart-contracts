@@ -2,6 +2,9 @@
   "name": "truecurrency",
   "version": "2.0.0",
   "description": "",
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
   "main": "truffle.js",
   "directories": {
     "test": "./test.sh"
