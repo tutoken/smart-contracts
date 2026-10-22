@@ -1,6 +1,20 @@
 version: 2.1
 
 commands:
+  install_node:
+    description: "Install pinned Node.js from nodejs.org with SHA256 verification (the legacy circleci/python:3-node image bundles an EOL Node)"
+    steps:
+      - run:
+          name: Install Node.js 24.22.1
+          command: |
+            NODE_VERSION=24.22.1
+            NODE_SHA256=6c172a9ab6718f7b801fb5a7bd486af2ee5e32758086a04b84fcce2aa77095e6
+            curl -fsSLO "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz"
+            echo "${NODE_SHA256}  node-v${NODE_VERSION}-linux-x64.tar.xz" | sha256sum -c -
+            sudo tar -xJf "node-v${NODE_VERSION}-linux-x64.tar.xz" -C /usr/local --strip-components=1
+            rm "node-v${NODE_VERSION}-linux-x64.tar.xz"
+            node --version | grep -qx "v${NODE_VERSION}"
+            npm install -g yarn
   pull_submodules:
     steps:
       - run:
@@ -32,6 +46,7 @@ jobs:
     docker:
       - image: circleci/python:3-node
     steps:
+      - install_node
       - checkout
       - setup_remote_docker
       - pull_submodules
@@ -44,6 +59,7 @@ jobs:
     docker:
       - image: circleci/python:3-node
     steps:
+      - install_node
       - attach_workspace:
           at: .
       - run: yarn build
@@ -57,33 +73,34 @@ jobs:
     docker:
       - image: circleci/python:3-node
     steps:
+      - install_node
       - attach_workspace:
           at: .
       - run: ./slither.sh
   lint:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn lint
   lint-package-contracts-por:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn workspace @trusttoken-smart-contracts/contracts-por lint
   test-package-contracts-por:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn workspace @trusttoken-smart-contracts/contracts-por test
   test-others:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
@@ -96,42 +113,42 @@ jobs:
       - run: yarn test:trusttoken
   test-truefi:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn test:truefi
   test-truefi2:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn test:truefi2
   test-lines-of-credit:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn test:lines-of-credit
   test-complete-flow:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn test:complete-flow
   deploy:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
       - run: yarn deploy:dryrun
   integration:
     docker:
-      - image: cimg/node:16.1.0
+      - image: cimg/node:24.22.1
     steps:
       - attach_workspace:
           at: .
